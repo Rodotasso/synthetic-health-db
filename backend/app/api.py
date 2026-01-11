@@ -9,6 +9,7 @@ from .generators import (
     DemographicsGenerator,
     EpidemicGenerator,
     SurvivalGenerator,
+    RegressionGenerator,
 )
 
 router = APIRouter()

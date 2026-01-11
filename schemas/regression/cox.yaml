@@ -1,0 +1,48 @@
+name: "Cox Proportional Hazards"
+description: "Analisis de supervivencia con covariados"
+n_rows: 20000
+seed: 42
+columns:
+  - name: subject_id
+    type: integer
+    range: [1, 20000]
+  - name: age
+    type: integer
+    range: [35, 85]
+    distribution: normal
+    mean: 60
+    std: 10
+  - name: sex
+    type: string
+    categories: ["M", "F"]
+  - name: treatment
+    type: string
+    categories: ["A", "B"]
+    ratio: [0.5, 0.5]
+  - name: stage
+    type: string
+    categories: ["I", "II", "III", "IV"]
+  - name: followup_days
+    type: integer
+    range: [30, 1825]
+    distribution: weibull
+    shape: 1.5
+    scale: 500
+  - name: event
+    type: boolean
+    distribution: bernoulli
+    probability: 0.45
+  - name: censored
+    type: boolean
+    distribution: bernoulli
+    probability: 0.30
+parameters:
+  baseline_hazard: 0.001
+  hazard_ratios:
+    age: 1.02
+    sex_M: 1.25
+    treatment_B: 0.75
+    stage:
+      II: 1.8
+      III: 2.5
+      IV: 3.2

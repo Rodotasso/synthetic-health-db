@@ -5,11 +5,13 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).parent / "backend"))
 from app.models import SchemaConfig
-
-
-@click.group()
-def cli():
-    """Synthetic Health DB CLI"""
+from app.generators import (
+    CIE10Generator,
+    DemographicsGenerator,
+    EpidemicGenerator,
+    SurvivalGenerator,
+    RegressionGenerator
+)
     """Synthetic Health DB CLI"""
     pass
 

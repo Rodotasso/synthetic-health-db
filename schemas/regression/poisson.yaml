@@ -1,0 +1,28 @@
+name: "Poisson Regression"
+description: "Conteo de eventos (cancer, muertes)"
+n_rows: 50000
+seed: 42
+columns:
+  - name: exposure_years
+    type: integer
+    range: [1, 50]
+    distribution: poisson
+    mean: 20
+  - name: radiation
+    type: float
+    range: [0, 5]
+    distribution: exponential
+    scale: 1.5
+  - name: smoking_status
+    type: boolean
+    distribution: bernoulli
+    probability: 0.35
+  - name: cancer_incidence
+    type: integer
+    range: [0, 10]
+    description: "Conteo anual de casos"
+parameters:
+  rate_lambda: 0.8
+  overdispersion: 0.25
+  offset: 0.0
+  distribution: poisson

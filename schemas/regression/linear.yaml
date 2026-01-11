@@ -1,0 +1,27 @@
+name: "Linear Regression"
+description: "Dataset para regresion lineal simple y multiple"
+n_rows: 100000
+seed: 42
+columns:
+  - name: x1
+    type: float
+    distribution: normal
+    mean: 0
+    std: 1
+  - name: x2
+    type: float
+    distribution: normal
+    mean: 5
+    std: 2
+  - name: x3
+    type: float
+    distribution: bernoulli
+    probability: 0.7
+  - name: y
+    type: float
+    description: "Variable dependiente con ruido"
+parameters:
+  coefficients: [2.5, 1.8, 0.3]
+  intercept: 5.0
+  noise_level: 0.15
+  model_type: linear

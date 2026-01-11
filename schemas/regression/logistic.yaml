@@ -1,0 +1,38 @@
+name: "Logistic Regression"
+description: "Dataset para clasificacion binaria"
+n_rows: 100000
+seed: 42
+columns:
+  - name: age
+    type: integer
+    range: [18, 85]
+    distribution: poisson
+    mean: 45
+  - name: sex
+    type: string
+    categories: ["M", "F"]
+    ratio: [0.5, 0.5]
+  - name: blood_pressure
+    type: float
+    range: [90, 180]
+    distribution: normal
+    mean: 130
+    std: 15
+  - name: cholesterol
+    type: float
+    range: [150, 300]
+    distribution: normal
+    mean: 220
+    std: 30
+  - name: disease
+    type: boolean
+    distribution: bernoulli
+    probability: 0.32
+parameters:
+  intercept: -4.5
+  coefficients:
+    age: 0.06
+    sex_M: 0.8
+    blood_pressure: 0.02
+    cholesterol: 0.01
+  link_function: logistic
