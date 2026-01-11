@@ -1,0 +1,22 @@
+# Generador de Códigos CIE-10 Válidos
+
+Muestra de códigos CIE-10 por categoría para testing.
+
+A00.0
+A01.0
+A02.0
+A15.0
+I21.0
+I25.1
+I50.9
+E11.0
+E11.9
+J44.9
+G20
+G30.9
+C50.9
+N18.9
+M54.5
+F32.9
+R10.4
+S06.0

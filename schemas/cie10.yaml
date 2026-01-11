@@ -1,0 +1,17 @@
+name: "CIE-10 Base"
+description: "Códigos CIE-10 con errores de testing"
+n_rows: 500000
+seed: 42
+columns:
+  - name: id
+    type: integer
+    range: [1, 500000]
+  - name: codigo
+    type: string
+    distribution: categorical
+    categories: data/cie10_valid_codes.txt
+    error_types:
+      spaces: 0.1
+      lowercase: 0.1
+      truncated: 0.05
+      invalid: 0.05

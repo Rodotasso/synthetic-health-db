@@ -1,0 +1,20 @@
+name: "Demographics"
+description: "Datos demográficos poblacionales"
+n_rows: 1000000
+seed: 42
+columns:
+  - name: id
+    type: integer
+    range: [1, 1000000]
+  - name: edad
+    type: integer
+    range: [5, 95]
+    distribution: beta
+  - name: genero
+    type: string
+    distribution: categorical
+    categories: ["M", "F"]
+  - name: region
+    type: string
+    distribution: categorical
+    categories: ["R01", "R02", "R03", "R04", "R05", "R06", "R07", "R08", "R09", "R10", "R11", "R12", "R13", "R14", "R15"]
