@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthetic Health DB</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; padding: 40px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 40px; border-bottom: 1px solid #30363d; }
+        h1 { font-size: 32px; font-weight: 600; }
+        .github-btn { background: #238636; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .github-btn:hover { background: #2ea043; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 40px; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 24px; }
+        h2 { font-size: 20px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; }
+        select, input { width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px; color: #e6edf3; font-size: 14px; }
+        select:focus, input:focus { outline: none; border-color: #58a6ff; }
+        .btn { background: #238636; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; width: 100%; }
+        .btn:hover { background: #2ea043; }
+        .commands { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 16px; margin-top: 20px; }
+        .cmd { background: #21262d; padding: 12px; border-radius: 4px; font-family: 'SFMono-Regular', monospace; font-size: 13px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .copy { background: none; border: 1px solid #30363d; color: #e6edf3; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .copy:hover { background: #30363d; }
+        .copied { color: #3fb950; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Synthetic Health DB</h1>
+            <a href="https://github.com/Rodotasso/synthetic-health-db" target="_blank">
+                <button class="github-btn">View on GitHub</button>
+            </a>
+        </header>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>🔧 Generate Data</h2>
+                <div class="form-group">
+                    <label>Schema</label>
+                    <select id="schema">
+                        <option value="cie10">cie10 - CIE-10 codes with errors</option>
+                        <option value="demographics">demographics - Population data</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Rows</label>
+                    <input type="number" id="rows" value="100000" min="1000" max="10000000" step="1000">
+                </div>
+                <div class="form-group">
+                    <label>Output (optional)</label>
+                    <input type="text" id="output" placeholder="data/output/{schema}.csv">
+                </div>
+                <button class="btn" onclick="generate()">Generate</button>
+            </div>
+            
+            <div class="card">
+                <h2>📋 Commands</h2>
+                <div class="commands">
+                    <div class="cmd">
+                        <code id="cmd1">git clone https://github.com/Rodotasso/synthetic-health-db.git</code>
+                        <button class="copy" onclick="copy('cmd1')">Copy</button>
+                    </div>
+                    <div class="cmd">
+                        <code id="cmd2">cd synthetic-health-db</code>
+                        <button class="copy" onclick="copy('cmd2')">Copy</button>
+                    </div>
+                    <div class="cmd">
+                        <code id="cmd3">python cli.py generate --schema <span id="schemaVal">cie10</span> --rows <span id="rowsVal">100000</span></code>
+                        <button class="copy" onclick="copy('cmd3')">Copy</button>
+                    </div>
+                    <div class="cmd">
+                        <code id="cmd4">cd shiny && Rscript -e "shiny::runApp()"</code>
+                        <button class="copy" onclick="copy('cmd4')">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function generate() {
+            const schema = document.getElementById('schema').value;
+            const rows = document.getElementById('rows').value;
+            const output = document.getElementById('output').value || `data/output/${schema}.csv`;
+            
+            const cmd = `python cli.py generate ${schema} --rows ${rows}`;
+            document.getElementById('cmd3').innerHTML = cmd;
+            
+            alert(`Generated: ${rows} rows of ${schema}\nOutput: ${output}\n\nCopy the command above and run it!`);
+        }
+        
+        function copy(id) {
+            const text = document.getElementById(id).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector(`#${id} + ~ button`);
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+        
+        document.getElementById('schema').addEventListener('change', updateCmd);
+        document.getElementById('rows').addEventListener('input', updateCmd);
+        
+        function updateCmd() {
+            const schema = document.getElementById('schema').value;
+            const rows = document.getElementById('rows').value;
+            document.getElementById('schemaVal').textContent = schema;
+            document.getElementById('rowsVal').textContent = rows;
+        }
+    </script>
+</body>
+</html>
