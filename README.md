@@ -1,6 +1,9 @@
 # Plataforma de Bases Sintéticas para Salud Pública
 
-Generador de bases de datos sintéticas para testing, desarrollo e investigación en salud pública. Interfaz NO-AI con soporte Python y R.
+Generador de bases de datos sintéticas para testing, desarrollo e investigación en salud pública. **Interfaz NO-AI** con soporte Python y R.
+
+## 🌐 GitHub Pages
+**UI Interactiva**: https://rodotasso.github.io/synthetic-health-db/
 
 ## Tech Stack
 
