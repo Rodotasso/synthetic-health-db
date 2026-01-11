@@ -3,8 +3,8 @@ from typing import Optional
 import yaml
 from pathlib import Path
 
-from app.models import GenerationRequest, GenerationResponse, SchemaConfig
-from app.generators import CIE10Generator, DemographicsGenerator
+from .models import GenerationRequest, GenerationResponse, SchemaConfig
+from .generators import CIE10Generator, DemographicsGenerator
 
 router = APIRouter()
 SCHEMAS_DIR = Path("schemas")

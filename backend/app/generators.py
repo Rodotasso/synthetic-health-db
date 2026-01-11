@@ -1,7 +1,7 @@
 from typing import List
 import numpy as np
 import pandas as pd
-from app.models import SchemaConfig, ErrorType
+from .models import SchemaConfig, ErrorType
 
 
 class CIE10Generator:
