@@ -1,0 +1,35 @@
+name: "Case Control"
+description: "Estudio de casos-controles emparejado"
+n_rows: 2000
+seed: 42
+columns:
+  - name: subject_id
+    type: integer
+  range: [1, 2000]
+  - name: case_status
+    type: string
+    categories: ["case", "control"]
+    ratio: [0.5, 0.5]
+  - name: age
+    type: integer
+    range: [18, 85]
+  - name: sex
+    type: string
+    categories: ["M", "F"]
+  - name: exposure
+    type: string
+    categories: ["low", "medium", "high"]
+  - name: outcome
+    type: string
+    categories: ["positive", "negative"]
+    distribution: bernoulli
+    probability:
+      case: 0.30
+      control: 0.10
+parameters:
+  case_ratio: 0.5
+  control_ratio: 0.5
+  exposure_levels: ["low", "medium", "high"]
+  outcome_probability:
+    case: 0.30
+    control: 0.10

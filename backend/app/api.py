@@ -4,7 +4,12 @@ import yaml
 from pathlib import Path
 
 from .models import GenerationRequest, GenerationResponse, SchemaConfig
-from .generators import CIE10Generator, DemographicsGenerator
+from .generators import (
+    CIE10Generator,
+    DemographicsGenerator,
+    EpidemicGenerator,
+    SurvivalGenerator,
+)
 
 router = APIRouter()
 SCHEMAS_DIR = Path("schemas")

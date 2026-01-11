@@ -1,0 +1,23 @@
+name: "Epidemic SIR"
+description: "Modelo SIR: Susceptible-Infected-Recovered"
+n_rows: 100000
+seed: 42
+columns:
+  - name: day
+    type: integer
+    range: [0, 365]
+  - name: susceptible
+    type: integer
+    range: [0, 1000000]
+  - name: infected
+    type: integer
+    range: [0, 500000]
+  - name: recovered
+    type: integer
+    range: [0, 1000000]
+parameters:
+  model: sir
+  R0: 2.5
+  beta: 0.0002
+  gamma: 0.1
+  population: 100000

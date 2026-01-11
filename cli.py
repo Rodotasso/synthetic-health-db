@@ -10,6 +10,7 @@ from app.models import SchemaConfig
 @click.group()
 def cli():
     """Synthetic Health DB CLI"""
+    """Synthetic Health DB CLI"""
     pass
 
 
@@ -19,7 +20,12 @@ def cli():
 @click.option("--output", "-o", default=None, help="Archivo de salida")
 def generate(schema_name: str, rows: int, output: str):
     """Genera base sintética desde schema"""
-    from app.generators import CIE10Generator, DemographicsGenerator
+    from app.generators import (
+        CIE10Generator,
+        DemographicsGenerator,
+        EpidemicGenerator,
+        SurvivalGenerator,
+    )
 
     schema_path = Path(f"schemas/{schema_name}.yaml")
     if not schema_path.exists():
@@ -44,6 +50,32 @@ def generate(schema_name: str, rows: int, output: str):
 
     if schema_name == "cie10":
         df = generator.generate(n_rows, config.columns[0].error_types)
+    elif schema_name.startswith("epidemic"):
+        model_type = schema_name.split("_")[1]
+        params = config.get("parameters", {})
+        if model_type == "sir":
+            df = generator.sir(
+                n_days=n_rows,
+                population=params.get("population", 100000),
+                R0=params.get("R0", 2.5),
+                gamma=params.get("gamma", 0.1),
+            )
+        elif model_type == "seir":
+            df = generator.seir(
+                n_days=n_days,
+                population=params.get("population", 100000),
+                R0=params.get("R0", 3.0),
+                sigma=params.get("sigma", 0.2),
+                gamma=params.get("gamma", 0.1),
+                latent_period=params.get("latent_period", 5),
+            )
+    elif schema_name == "survival":
+        params = config.get("parameters", {})
+        df = generator.kaplan_meier(
+            n_subjects=n_rows,
+            followup_days=params.get("max_followup", 1095),
+            event_rate=params.get("event_rate", 0.15),
+        )
     else:
         df = generator.generate(n_rows)
 

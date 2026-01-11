@@ -1,0 +1,32 @@
+name: "Survival Cohort"
+description: "Estudio de supervivencia cohorte longitudinal"
+n_rows: 5000
+seed: 42
+columns:
+  - name: subject_id
+    type: integer
+    range: [1, 5000]
+  - name: age
+    type: integer
+    range: [18, 85]
+  - name: sex
+    type: string
+    categories: ["M", "F"]
+  - name: treatment
+    type: string
+    categories: ["A", "B"]
+  - name: followup_days
+    type: integer
+    range: [30, 1095]
+  - name: event
+    type: boolean
+    distribution: bernoulli
+    probability: 0.15
+  - name: censored
+    type: boolean
+    distribution: bernoulli
+    probability: 0.30
+parameters:
+  event_rate: 0.15
+  censoring_rate: 0.30
+  max_followup: 1095

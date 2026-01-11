@@ -1,0 +1,23 @@
+name: "TimeSeries COVID"
+description: "Serie temporal casos COVID-19 con tendencia y ruido"
+n_rows: 730
+seed: 42
+columns:
+  - name: date
+    type: string
+    format: YYYY-MM-DD
+    start_date: "2024-01-01"
+  - name: cases
+    type: integer
+    range: [0, 50000]
+  - name: deaths
+    type: integer
+    range: [0, 500]
+  - name: tests
+    type: integer
+    range: [1000, 50000]
+parameters:
+  trend: seasonal
+  noise_level: 0.2
+  seasonality_amplitude: 0.3
+  case_fatality_ratio: 0.02

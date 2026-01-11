@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Dict, Any
 import numpy as np
 import pandas as pd
 from .models import SchemaConfig, ErrorType
+from .epidemic_generators import EpidemicGenerator, SurvivalGenerator
 
 
 class CIE10Generator:
