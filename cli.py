@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 import sys
 
-sys.path.insert(0, Path(__file__).parent)
+sys.path.insert(0, str(Path(__file__).parent / "backend"))
 from app.models import SchemaConfig
 
 
@@ -54,7 +54,7 @@ def generate(schema_name: str, rows: int, output: str):
     output_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(output_path, index=False)
 
-    click.echo(f"✓ Generado: {n_rows} filas en {output_path}")
+    click.echo(f"[OK] Generado: {n_rows} filas en {output_path}")
 
 
 if __name__ == "__main__":

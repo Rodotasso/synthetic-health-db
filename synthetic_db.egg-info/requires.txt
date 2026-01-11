@@ -1,0 +1,6 @@
+click
+pydantic
+pydantic-settings
+pyyaml
+pandas
+numpy
