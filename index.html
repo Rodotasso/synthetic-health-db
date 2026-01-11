@@ -44,8 +44,19 @@
                 <div class="form-group">
                     <label>Schema</label>
                     <select id="schema">
-                        <option value="cie10">cie10 - CIE-10 codes with errors</option>
-                        <option value="demographics">demographics - Population data</option>
+                        <optgroup label="Medical">
+                            <option value="medical/cie10">cie10 - CIE-10 codes with errors</option>
+                            <option value="medical/demographics">demographics - Population data</option>
+                        </optgroup>
+                        <optgroup label="Biostatistics">
+                            <option value="biostatistics/survival_cohort">survival_cohort - Kaplan-Meier</option>
+                            <option value="biostatistics/case_control">case_control - Case-control studies</option>
+                        </optgroup>
+                        <optgroup label="Epidemiology">
+                            <option value="epidemiology/epidemic_sir">epidemic_sir - SIR model (R0 curves)</option>
+                            <option value="epidemiology/epidemic_seir">epidemic_seir - SEIR model (+Exposed)</option>
+                            <option value="epidemiology/timeseries_covid">timeseries_covid - COVID-19 time series</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="form-group">
