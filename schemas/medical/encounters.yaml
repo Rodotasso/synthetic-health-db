@@ -1,0 +1,109 @@
+name: clinical_encounters
+version: "1.0"
+description: Encuentros clinicos vinculados a pacientes
+
+generator: EncounterGenerator
+
+fields:
+  - name: encounter_id
+    type: string
+    format: "ENC-{seq:08d}"
+    required: true
+
+  - name: patient_id
+    type: patient_id
+    foreign_key: demographics.patient_id
+    required: true
+
+  - name: encounter_date
+    type: date
+    range: ["2018-01-01", "2025-12-31"]
+
+  - name: encounter_type
+    type: categorical
+    values: ["ambulatory", "emergency", "inpatient", "telehealth", "home_visit"]
+    probabilities: [0.55, 0.15, 0.10, 0.15, 0.05]
+
+  - name: facility_id
+    type: string
+    format: "FAC-{seq:03d}"
+
+  - name: facility_type
+    type: categorical
+    values: ["hospital", "clinic", "cesfam", "sapu", "virtual"]
+
+  - name: provider_id
+    type: string
+    format: "PROV-{seq:04d}"
+
+  - name: provider_specialty
+    type: categorical
+    values: ["general", "internal_medicine", "pediatrics", "surgery", "obstetrics", "psychiatry", "emergency"]
+    probabilities: [0.35, 0.15, 0.12, 0.10, 0.08, 0.10, 0.10]
+
+  - name: primary_dx
+    type: cie10
+    required: true
+
+  - name: secondary_dx
+    type: cie10
+    nullable: true
+    probability: 0.40
+
+  - name: tertiary_dx
+    type: cie10
+    nullable: true
+    probability: 0.15
+
+  - name: procedure_code
+    type: string
+    nullable: true
+    probability: 0.30
+
+  - name: los_days
+    type: integer
+    description: Length of stay (solo inpatient)
+    range: [1, 90]
+    distribution: lognormal
+    conditional: "encounter_type == 'inpatient'"
+
+  - name: discharge_status
+    type: categorical
+    values: ["home", "transfer", "ama", "deceased", null]
+    conditional: "encounter_type == 'inpatient'"
+
+  - name: cost_usd
+    type: float
+    distribution: lognormal
+    meanlog: 5.5
+    sdlog: 1.5
+    range: [10, 500000]
+
+  - name: insurance_type
+    type: categorical
+    values: ["fonasa_a", "fonasa_b", "fonasa_c", "fonasa_d", "isapre", "none"]
+    probabilities: [0.15, 0.25, 0.20, 0.15, 0.20, 0.05]
+
+time_patterns:
+  daily:
+    peak_hours: [9, 10, 11, 14, 15, 16]
+    emergency_peak: [19, 20, 21, 22]
+  weekly:
+    high_days: [1, 2, 3, 4, 5]  # Lun-Vie
+    low_days: [6, 7]  # Sab-Dom (excepto emergency)
+  seasonal:
+    winter_increase: ["J00-J99"]  # Respiratorias
+    summer_increase: ["A00-A09", "S00-T98"]  # Intestinales, traumas
+
+defaults:
+  rows: 500000
+  seed: 42
+  encounters_per_patient: [1, 15]
+
+output:
+  format: parquet
+  partitions: ["encounter_type", "epi_year"]
+
+validation:
+  - patient_id: exists_in(demographics)
+  - los_days: requires(encounter_type == 'inpatient')

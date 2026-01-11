@@ -1,0 +1,110 @@
+name: outbreak_detection
+version: "1.0"
+description: Datos para deteccion y caracterizacion de brotes
+
+generator: OutbreakGenerator
+
+fields:
+  - name: case_id
+    type: string
+    format: "CASE-{seq:05d}"
+    required: true
+
+  - name: patient_id
+    type: patient_id
+    format: "SHDB-{birth_year}-{sex}-{region}-{hash6}"
+    required: true
+
+  - name: onset_date
+    type: date
+    description: Fecha de inicio de sintomas
+
+  - name: notification_date
+    type: date
+    description: Fecha de notificacion
+    constraint: ">= onset_date"
+
+  - name: disease_code
+    type: cie10
+    required: true
+
+  - name: outbreak_id
+    type: string
+    format: "OB-{year}-{region}-{seq}"
+
+  - name: outbreak_type
+    type: categorical
+    values: ["point_source", "continuous", "propagated", "unknown"]
+
+  - name: generation
+    type: integer
+    range: [0, 10]
+    description: Generacion epidemiologica (para propagated)
+
+  - name: age
+    type: integer
+    range: [0, 100]
+
+  - name: sex
+    type: categorical
+    values: ["M", "F"]
+
+  - name: region
+    type: categorical
+    values: ["R01", "R02", "R03", "R04", "R05", "R06", "R07", "R08", "R09", "R10", "R11", "R12", "R13", "R14", "R15", "R16"]
+
+  - name: exposure_location
+    type: string
+    format: "LOC-{seq:02d}"
+    nullable: true
+
+  - name: lat
+    type: float
+    range: [-56.0, -17.5]
+    description: Latitud (Chile)
+
+  - name: lon
+    type: float
+    range: [-76.0, -66.0]
+    description: Longitud (Chile)
+
+  - name: secondary_case
+    type: boolean
+    description: Es caso secundario
+
+  - name: lab_confirmed
+    type: boolean
+    probability: 0.70
+
+  - name: hospitalized
+    type: boolean
+    probability: 0.15
+
+  - name: icu
+    type: boolean
+    probability: 0.03
+    conditional: hospitalized
+
+  - name: deceased
+    type: boolean
+    probability: 0.02
+
+  - name: severity
+    type: categorical
+    values: ["mild", "moderate", "severe"]
+    probabilities: [0.70, 0.20, 0.10]
+
+cluster_config:
+  algorithm: dbscan
+  eps: 0.01
+  min_samples: 3
+  temporal_window: 14  # dias
+
+defaults:
+  rows: 500
+  seed: 42
+  outbreak_type: point_source
+
+validation:
+  - notification_date: ">= onset_date"
+  - icu: "requires hospitalized"

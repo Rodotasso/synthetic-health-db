@@ -1,0 +1,87 @@
+name: surveillance_alerts
+version: "1.0"
+description: Sistema de alertas de vigilancia epidemiologica
+
+generator: SurveillanceGenerator
+
+fields:
+  - name: alert_id
+    type: string
+    format: "ALERT-{date}-{region}-{seq}"
+    required: true
+
+  - name: date
+    type: date
+    range: ["2020-01-01", "2025-12-31"]
+
+  - name: epi_week
+    type: integer
+    derived_from: date
+    range: [1, 53]
+
+  - name: epi_year
+    type: integer
+    derived_from: date
+
+  - name: region
+    type: categorical
+    values: ["R01", "R02", "R03", "R04", "R05", "R06", "R07", "R08", "R09", "R10", "R11", "R12", "R13", "R14", "R15", "R16"]
+
+  - name: disease_code
+    type: cie10
+    categories:
+      - "A00-A09"   # Intestinales
+      - "J09-J18"   # Respiratorias
+      - "A90-A99"   # Arbovirosis
+
+  - name: cases
+    type: integer
+    distribution: poisson
+    lambda_from: baseline_incidence
+
+  - name: expected_cases
+    type: float
+    derived_from: baseline_incidence
+
+  - name: zscore
+    type: float
+    formula: "(cases - expected) / sqrt(expected)"
+
+  - name: alert_level
+    type: categorical
+    values: ["GREEN", "YELLOW", "ORANGE", "RED"]
+    thresholds:
+      GREEN: "zscore < 1.5"
+      YELLOW: "zscore >= 1.5 AND zscore < 2.0"
+      ORANGE: "zscore >= 2.0 AND zscore < 3.0"
+      RED: "zscore >= 3.0"
+
+  - name: outbreak_flag
+    type: boolean
+    probability: 0.02
+
+parameters:
+  diseases:
+    - code: "A00"
+      name: "Colera"
+      baseline: 0.1
+      urgency: immediate
+    - code: "J09"
+      name: "Influenza"
+      baseline: 5.0
+      urgency: weekly
+      seasonal: true
+    - code: "A90"
+      name: "Dengue"
+      baseline: 2.0
+      urgency: immediate
+
+defaults:
+  rows: 100000
+  seed: 42
+  regions: 16
+  days: 365
+
+output:
+  format: parquet
+  partitions: ["epi_year", "region"]
