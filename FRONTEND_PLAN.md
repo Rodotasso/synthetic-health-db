@@ -317,11 +317,11 @@ interface SchemaUsage {
 ## Criterios de Aceptación
 
 - [x] Home muestra 3 opciones principales
-- [ ] Catálogo lista schemas con filtros por categoría
+- [x] Catálogo lista schemas con filtros por categoría
 - [ ] Wizard genera datos en 4 pasos
 - [ ] Preview muestra primeras 20 filas
 - [ ] Download funciona CSV y JSON
-- [ ] Builder permite crear schema básico
+- [x] Builder permite crear schema básico
 - [ ] Combinación de schemas funcional (presets + drag&drop)
 - [ ] Schemas usados >3 veces se guardan en localStorage
 - [ ] Deploy automático a GitHub Pages
@@ -349,3 +349,25 @@ interface SchemaUsage {
 **Verificación**:
 - `npm run dev` - OK (localhost:5173)
 - `npm run build` - OK (235KB JS, 9KB CSS)
+
+### Etapa 2: Páginas Core + UI Base - COMPLETADA
+
+**Fecha**: 2026-01-18
+
+**Archivos creados**:
+- `frontend/src/components/ui/` - button, card, input, select, badge, tabs
+- `frontend/src/components/layout/` - Header, Footer
+- `frontend/src/pages/` - Home, Catalog, Wizard, Builder (expandidas)
+- `frontend/src/types/schema.ts` - tipos TypeScript para schemas
+- `frontend/src/data/schemas.ts` - catálogo de 14 schemas
+
+**Features**:
+- Header con navegación y link a GitHub
+- Footer con info del grupo CDSP
+- Catálogo con filtros por categoría y búsqueda
+- Wizard con 4 pasos visuales
+- Builder con presets y selección de schemas
+
+**Verificación**:
+- `npm run build` - OK (291KB JS, 25KB CSS)
+- Navegación entre 4 páginas funcional
