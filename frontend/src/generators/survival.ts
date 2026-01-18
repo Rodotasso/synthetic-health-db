@@ -11,7 +11,7 @@ export interface SurvivalRecord {
   patient_id: string
   age: number
   sex: 'M' | 'F'
-  treatment: 'treatment' | 'control'
+  treatment: 'tratamiento' | 'control'
   stage: string
   followup_days: number
   event: 0 | 1
@@ -52,8 +52,8 @@ export function generateSurvival(
   const data: SurvivalRecord[] = []
 
   for (let i = 0; i < count; i++) {
-    const treatment = rng() < treatmentProb ? 'treatment' : 'control'
-    const lambda = treatment === 'treatment' ? lambdaTreatment : lambdaControl
+    const treatment = rng() < treatmentProb ? 'tratamiento' : 'control'
+    const lambda = treatment === 'tratamiento' ? lambdaTreatment : lambdaControl
     
     // Generate true event time
     const trueEventTime = randomExponential(rng, lambda)

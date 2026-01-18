@@ -123,7 +123,7 @@ export const INSURANCE_TYPES = [
  * Encounter types
  */
 export const ENCOUNTER_TYPES = [
-  'ambulatory', 'emergency', 'inpatient', 'telehealth',
+  'ambulatorio', 'urgencia', 'hospitalizado', 'telemedicina',
 ] as const
 
 /**
@@ -141,9 +141,9 @@ export const CANCER_STAGES = ['I', 'II', 'III', 'IV'] as const
 /**
  * Smoking status
  */
-export const SMOKING_STATUS = ['never', 'former', 'current'] as const
+export const SMOKING_STATUS = ['nunca', 'exfumador', 'actual'] as const
 
 /**
  * Severity levels
  */
-export const SEVERITY_LEVELS = ['mild', 'moderate', 'severe'] as const
+export const SEVERITY_LEVELS = ['leve', 'moderado', 'grave'] as const

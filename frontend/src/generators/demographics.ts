@@ -141,7 +141,7 @@ export function generateDemographicsLegacy(
     age: r.age,
     sex: r.sex,
     region: r.region_code,
-    urban: r.ruralidad === 'Urbano' ? 'urban' : 'rural',
+    urban: r.ruralidad === 'Urbano' ? 'urbano' : 'rural',
     insurance: r.prevision.toLowerCase().replace(' ', '_'),
   }))
 }
