@@ -2,14 +2,14 @@
  * Synthetic Health Database Generators
  * 
  * Provides deterministic, reproducible data generation for:
- * - Medical: demographics, CIE-10, encounters
+ * - Medical: demographics, CIE-10, encounters, medications, observations, vitals, immunizations, conditions, procedures, organizations
  * - Epidemiology: SIR, SEIR, surveillance, outbreak
  * - Biostatistics: survival cohort, case-control
  * - Regression: linear, logistic, Poisson, Cox
  */
 
 // Re-export individual generators
-export { generateDemographics } from './demographics'
+export { generateDemographics, generateDemographicsLegacy } from './demographics'
 export type { DemographicsRecord, DemographicsParams } from './demographics'
 
 export { generateCIE10 } from './cie10'
@@ -17,6 +17,27 @@ export type { CIE10Record, CIE10Params } from './cie10'
 
 export { generateEncounters } from './encounters'
 export type { EncounterRecord, EncountersParams } from './encounters'
+
+export { generateMedications } from './medications'
+export type { MedicationRecord, MedicationsParams } from './medications'
+
+export { generateObservations } from './observations'
+export type { ObservationRecord, ObservationsParams } from './observations'
+
+export { generateVitals, generateVitalsSimple } from './vitals'
+export type { VitalsRecord, VitalsParams } from './vitals'
+
+export { generateImmunizations } from './immunizations'
+export type { ImmunizationRecord, ImmunizationsParams } from './immunizations'
+
+export { generateConditions } from './conditions'
+export type { ConditionRecord, ConditionsParams } from './conditions'
+
+export { generateProcedures } from './procedures'
+export type { ProcedureRecord, ProceduresParams } from './procedures'
+
+export { generateOrganizations, getAllOrganizations } from './organizations'
+export type { OrganizationRecord, OrganizationsParams } from './organizations'
 
 export { generateSurvival } from './survival'
 export type { SurvivalRecord, SurvivalParams } from './survival'
@@ -60,6 +81,13 @@ export {
 import { generateDemographics } from './demographics'
 import { generateCIE10 } from './cie10'
 import { generateEncounters } from './encounters'
+import { generateMedications } from './medications'
+import { generateObservations } from './observations'
+import { generateVitalsSimple } from './vitals'
+import { generateImmunizations } from './immunizations'
+import { generateConditions } from './conditions'
+import { generateProcedures } from './procedures'
+import { generateOrganizations } from './organizations'
 import { generateSurvival } from './survival'
 import { generateCaseControl } from './casecontrol'
 import { generateSurveillance } from './surveillance'
@@ -82,6 +110,22 @@ export type GeneratorFunction = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => any[]
 
+// Helper to generate patient IDs for dependent generators
+function generatePatientIdsForGenerator(count: number, seed: number): string[] {
+  const demographics = generateDemographics(Math.max(count, 100), seed)
+  return demographics.map(d => d.patient_id)
+}
+
+// Wrapper generators that auto-generate patient IDs
+function wrapWithPatientIds<T>(
+  generator: (patientIds: string[], count: number, seed: number, params?: T) => GeneratedRecord[]
+): GeneratorFunction {
+  return (count: number, seed: number, params?: T) => {
+    const patientIds = generatePatientIdsForGenerator(count, seed)
+    return generator(patientIds, count, seed, params)
+  }
+}
+
 /**
  * Map of schema IDs to their generator functions
  */
@@ -90,6 +134,18 @@ export const generators: Record<string, GeneratorFunction> = {
   demographics: generateDemographics,
   cie10: generateCIE10,
   encounters: generateEncounters,
+  medications: wrapWithPatientIds(generateMedications),
+  observations: wrapWithPatientIds(generateObservations),
+  vitals: (count, seed, params) => generateVitalsSimple(
+    generatePatientIdsForGenerator(count, seed), 
+    count, 
+    seed, 
+    params
+  ),
+  immunizations: wrapWithPatientIds(generateImmunizations),
+  conditions: wrapWithPatientIds(generateConditions),
+  procedures: wrapWithPatientIds(generateProcedures),
+  organizations: generateOrganizations,
   
   // Epidemiology
   sir: generateSIR,
