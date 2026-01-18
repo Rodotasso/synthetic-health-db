@@ -47,6 +47,15 @@ export type {
 // Re-export utilities
 export { mulberry32, hash, generatePatientId } from './utils'
 
+// Re-export join utilities
+export { 
+  generateRelatedDatasets, 
+  generateJoinedDataset,
+  mergeDatasets,
+  type JoinConfig,
+  type JoinedDataset,
+} from './joins'
+
 // Import for unified interface
 import { generateDemographics } from './demographics'
 import { generateCIE10 } from './cie10'

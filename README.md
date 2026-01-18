@@ -1,5 +1,7 @@
 # Synthetic Health Database
 
+[![Deploy to GitHub Pages](https://github.com/Rodotasso/synthetic-health-db/actions/workflows/deploy.yml/badge.svg)](https://github.com/Rodotasso/synthetic-health-db/actions/workflows/deploy.yml)
+
 Generador de bases de datos sintéticas para epidemiología y bioestadística. **100% client-side** - no requiere backend.
 
 ## Demo
@@ -121,9 +123,9 @@ downloadJSON(data, 'pacientes.json')
 - [x] Etapa 1: Setup (Vite + React + Tailwind)
 - [x] Etapa 2: UI Components + Pages
 - [x] Etapa 3: Generadores TypeScript
-- [ ] Etapa 4: Wizard Integration
-- [ ] Etapa 5: Schema Joins (1:N)
-- [ ] Etapa 6: GitHub Pages Deploy
+- [x] Etapa 4: Wizard Integration
+- [x] Etapa 5: Schema Joins (1:N)
+- [x] Etapa 6: GitHub Pages Deploy
 
 ## License
 
