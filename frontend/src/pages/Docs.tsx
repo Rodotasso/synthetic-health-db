@@ -150,17 +150,140 @@ library(dplyr)
 
 datos <- read_csv("demographics.csv")
 
-# Pirámide poblacional
+# Pirámide poblacional por comuna
 datos |> 
-  count(sex, age_group = cut(age, breaks = seq(0, 100, 10))) |> 
+  count(sex, age_group = cut(age, breaks = seq(0, 100, 10)), comuna) |> 
   ggplot(aes(x = age_group, y = n, fill = sex)) +
-  geom_col(position = "dodge")`,
+  geom_col(position = "dodge") +
+  facet_wrap(~comuna)`,
     python: `import pandas as pd
 
 datos = pd.read_csv("demographics.csv")
 
-# Distribución por edad y sexo
-datos.groupby(["sex", pd.cut(datos["age"], bins=range(0, 101, 10))]).size()`,
+# Distribución por región y previsión
+datos.groupby(["region", "prevision"]).size().unstack(fill_value=0)`,
+  },
+  medications: {
+    r: `library(readr)
+library(dplyr)
+
+datos <- read_csv("medications.csv")
+
+# Top medicamentos por categoría ATC
+datos |> 
+  count(atc_category, medication_name, sort = TRUE) |> 
+  group_by(atc_category) |> 
+  slice_head(n = 5)`,
+    python: `import pandas as pd
+
+datos = pd.read_csv("medications.csv")
+
+# Medicamentos del Formulario Nacional
+fn_meds = datos[datos["formulario_nacional"] == True]
+fn_meds.groupby("atc_category").size()`,
+  },
+  observations: {
+    r: `library(readr)
+library(dplyr)
+
+datos <- read_csv("observations.csv")
+
+# Valores críticos por categoría
+datos |> 
+  filter(interpretation %in% c("LL", "HH")) |> 
+  count(category, interpretation)`,
+    python: `import pandas as pd
+
+datos = pd.read_csv("observations.csv")
+
+# Distribución de interpretaciones
+datos.groupby(["category", "interpretation"]).size().unstack()`,
+  },
+  vitals: {
+    r: `library(readr)
+library(ggplot2)
+
+datos <- read_csv("vitals.csv")
+
+# Distribución de presión arterial
+datos |> 
+  ggplot(aes(x = systolic_bp, y = diastolic_bp, color = bp_category)) +
+  geom_point(alpha = 0.5)`,
+    python: `import pandas as pd
+
+datos = pd.read_csv("vitals.csv")
+
+# Categorías de IMC
+datos["bmi_category"].value_counts()`,
+  },
+  immunizations: {
+    r: `library(readr)
+library(dplyr)
+
+datos <- read_csv("immunizations.csv")
+  
+# Cobertura por vacuna PNI
+datos |> 
+  filter(pni_schedule) |> 
+  count(vaccine_name, dose_number)`,
+    python: `import pandas as pd
+
+datos = pd.read_csv("immunizations.csv")
+
+# Vacunas más frecuentes
+datos["vaccine_name"].value_counts().head(10)`,
+  },
+  conditions: {
+    r: `library(readr)
+library(dplyr)
+
+datos <- read_csv("conditions.csv")
+
+# Condiciones GES más frecuentes
+datos |> 
+  filter(ges_problem) |> 
+  count(condition_name, sort = TRUE) |> 
+  head(15)`,
+    python: `import pandas as pd
+
+datos = pd.read_csv("conditions.csv")
+
+# Distribución por categoría CIE-10
+datos.groupby("cie10_chapter").size().sort_values(ascending=False)`,
+  },
+  procedures: {
+    r: `library(readr)
+library(dplyr)
+
+datos <- read_csv("procedures.csv")
+
+# Procedimientos por complejidad y outcome
+datos |> 
+  count(complexity, outcome) |> 
+  tidyr::pivot_wider(names_from = outcome, values_from = n)`,
+    python: `import pandas as pd
+
+datos = pd.read_csv("procedures.csv")
+
+# Procedimientos GES
+ges = datos[datos["ges_related"] == True]
+ges.groupby("category").size()`,
+  },
+  organizations: {
+    r: `library(readr)
+library(dplyr)
+
+datos <- read_csv("organizations.csv")
+
+# Establecimientos por tipo y región
+datos |> 
+  count(organization_type, region, sort = TRUE)`,
+    python: `import pandas as pd
+
+datos = pd.read_csv("organizations.csv")
+
+# Hospitales de alta complejidad
+datos[datos["complexity"] == "Alta"].groupby("region").size()`,
   },
   survival_cohort: {
     r: `library(survival)
