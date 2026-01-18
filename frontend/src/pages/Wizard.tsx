@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Check, ChevronRight, Download, Eye, Settings, Target } from 'lucide-react'
+import { Check, ChevronRight, Download, Eye, Settings, Target, RefreshCw } from 'lucide-react'
 import { Button, Input, Select, Card, CardContent, CardHeader, CardTitle, Badge } from '@/components/ui'
 import { schemas, categoryLabels, categoryColors } from '@/data/schemas'
+import { generate, downloadCSV, downloadJSON, type GeneratedRecord } from '@/generators'
 import { cn } from '@/lib/utils'
 
 const steps = [
@@ -20,11 +21,52 @@ export function Wizard() {
   const [selectedSchema, setSelectedSchema] = useState(initialSchema)
   const [rowCount, setRowCount] = useState(100)
   const [seed, setSeed] = useState<number | undefined>(undefined)
+  const [previewData, setPreviewData] = useState<GeneratedRecord[]>([])
+  const [fullData, setFullData] = useState<GeneratedRecord[]>([])
+  const [isGenerating, setIsGenerating] = useState(false)
 
   const schema = useMemo(
     () => schemas.find((s) => s.id === selectedSchema),
     [selectedSchema]
   )
+
+  // Generate data when entering step 3
+  const generateData = useCallback(() => {
+    if (!selectedSchema) return
+    
+    setIsGenerating(true)
+    
+    // Use setTimeout to allow UI to update
+    setTimeout(() => {
+      try {
+        const actualSeed = seed ?? Math.floor(Math.random() * 1000000)
+        const data = generate(selectedSchema, rowCount, actualSeed)
+        setFullData(data)
+        setPreviewData(data.slice(0, 10))
+        
+        // Store the used seed if it was random
+        if (seed === undefined) {
+          setSeed(actualSeed)
+        }
+      } catch (error) {
+        console.error('Generation error:', error)
+        setPreviewData([])
+        setFullData([])
+      }
+      setIsGenerating(false)
+    }, 50)
+  }, [selectedSchema, rowCount, seed])
+
+  const regenerateData = () => {
+    setSeed(Math.floor(Math.random() * 1000000))
+  }
+
+  // Regenerate when seed changes
+  useMemo(() => {
+    if (currentStep >= 3 && selectedSchema && seed !== undefined) {
+      generateData()
+    }
+  }, [seed])
 
   const canProceed = () => {
     switch (currentStep) {
@@ -33,7 +75,7 @@ export function Wizard() {
       case 2:
         return rowCount > 0 && rowCount <= 10000
       case 3:
-        return true
+        return fullData.length > 0
       default:
         return false
     }
@@ -41,7 +83,13 @@ export function Wizard() {
 
   const nextStep = () => {
     if (canProceed() && currentStep < 4) {
-      setCurrentStep(currentStep + 1)
+      const next = currentStep + 1
+      setCurrentStep(next)
+      
+      // Generate data when entering step 3
+      if (next === 3) {
+        generateData()
+      }
     }
   }
 
@@ -50,6 +98,26 @@ export function Wizard() {
       setCurrentStep(currentStep - 1)
     }
   }
+
+  const handleDownloadCSV = () => {
+    if (fullData.length > 0 && schema) {
+      downloadCSV(fullData, `${schema.id}_${rowCount}_seed${seed}.csv`)
+    }
+  }
+
+  const handleDownloadJSON = () => {
+    if (fullData.length > 0 && schema) {
+      downloadJSON(fullData, `${schema.id}_${rowCount}_seed${seed}.json`)
+    }
+  }
+
+  // Get column names from preview data or schema
+  const columnNames = useMemo(() => {
+    if (previewData.length > 0) {
+      return Object.keys(previewData[0])
+    }
+    return schema?.columns.map(c => c.name) || []
+  }, [previewData, schema])
 
   return (
     <div className="flex-1 py-8 px-4">
@@ -117,7 +185,11 @@ export function Wizard() {
                 </p>
                 <Select
                   value={selectedSchema}
-                  onChange={(e) => setSelectedSchema(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedSchema(e.target.value)
+                    setPreviewData([])
+                    setFullData([])
+                  }}
                 >
                   <option value="">Seleccionar esquema...</option>
                   {schemas.map((s) => (
@@ -181,7 +253,7 @@ export function Wizard() {
                   <div className="p-4 rounded-lg bg-secondary/50">
                     <h4 className="font-medium mb-2">Parámetros del modelo</h4>
                     <p className="text-xs text-muted-foreground mb-3">
-                      Configuración avanzada disponible en próximas versiones
+                      Valores por defecto (configuración avanzada próximamente)
                     </p>
                     <pre className="text-xs bg-background p-2 rounded overflow-auto">
                       {JSON.stringify(schema.defaultParams, null, 2)}
@@ -193,29 +265,74 @@ export function Wizard() {
 
             {currentStep === 3 && schema && (
               <div className="space-y-4">
-                <p className="text-muted-foreground">
-                  Vista previa de las primeras 10 filas (generación disponible en Etapa 3)
-                </p>
-                <div className="overflow-auto border rounded-lg">
+                <div className="flex items-center justify-between">
+                  <p className="text-muted-foreground">
+                    Vista previa de las primeras 10 filas
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={regenerateData}
+                    disabled={isGenerating}
+                  >
+                    <RefreshCw className={cn("w-4 h-4 mr-2", isGenerating && "animate-spin")} />
+                    Nueva semilla
+                  </Button>
+                </div>
+                
+                {seed !== undefined && (
+                  <p className="text-xs text-muted-foreground">
+                    Semilla actual: <code className="bg-secondary px-1 rounded">{seed}</code>
+                  </p>
+                )}
+
+                <div className="overflow-auto border rounded-lg max-h-96">
                   <table className="w-full text-sm">
-                    <thead className="bg-secondary">
+                    <thead className="bg-secondary sticky top-0">
                       <tr>
-                        {schema.columns.map((col) => (
-                          <th key={col.name} className="px-3 py-2 text-left font-medium">
-                            {col.name}
+                        <th className="px-3 py-2 text-left font-medium text-muted-foreground w-10">#</th>
+                        {columnNames.map((col) => (
+                          <th key={col} className="px-3 py-2 text-left font-medium whitespace-nowrap">
+                            {col}
                           </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td colSpan={schema.columns.length} className="px-3 py-8 text-center text-muted-foreground">
-                          Generadores se implementarán en Etapa 3
-                        </td>
-                      </tr>
+                      {isGenerating ? (
+                        <tr>
+                          <td colSpan={columnNames.length + 1} className="px-3 py-8 text-center text-muted-foreground">
+                            <RefreshCw className="w-5 h-5 animate-spin mx-auto mb-2" />
+                            Generando datos...
+                          </td>
+                        </tr>
+                      ) : previewData.length > 0 ? (
+                        previewData.map((row, idx) => (
+                          <tr key={idx} className="border-t border-border hover:bg-secondary/30">
+                            <td className="px-3 py-2 text-muted-foreground">{idx + 1}</td>
+                            {columnNames.map((col) => (
+                              <td key={col} className="px-3 py-2 whitespace-nowrap">
+                                {formatCellValue(row[col])}
+                              </td>
+                            ))}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={columnNames.length + 1} className="px-3 py-8 text-center text-muted-foreground">
+                            No se pudieron generar datos
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
+
+                {fullData.length > 0 && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Mostrando 10 de {fullData.length} filas generadas
+                  </p>
+                )}
               </div>
             )}
 
@@ -225,24 +342,26 @@ export function Wizard() {
                   <Check className="w-8 h-8 text-success" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold mb-2">Configuración completa</h3>
+                  <h3 className="text-xl font-semibold mb-2">Generación completa</h3>
                   <p className="text-muted-foreground">
-                    {schema.name} - {rowCount} filas
-                    {seed && ` - Semilla: ${seed}`}
+                    {schema.name} - {fullData.length.toLocaleString()} filas
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Semilla: <code className="bg-secondary px-1 rounded">{seed}</code>
                   </p>
                 </div>
                 <div className="flex justify-center gap-4">
-                  <Button disabled>
+                  <Button onClick={handleDownloadCSV}>
                     <Download className="w-4 h-4 mr-2" />
                     Descargar CSV
                   </Button>
-                  <Button variant="outline" disabled>
+                  <Button variant="outline" onClick={handleDownloadJSON}>
                     <Download className="w-4 h-4 mr-2" />
                     Descargar JSON
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Descarga disponible tras implementar generadores (Etapa 3)
+                  Usa la semilla <code className="bg-secondary px-1 rounded">{seed}</code> para reproducir estos exactos datos
                 </p>
               </div>
             )}
@@ -268,4 +387,16 @@ export function Wizard() {
       </div>
     </div>
   )
+}
+
+// Helper function to format cell values for display
+function formatCellValue(value: unknown): string {
+  if (value === null || value === undefined) return '-'
+  if (typeof value === 'boolean') return value ? 'Sí' : 'No'
+  if (typeof value === 'number') {
+    // Format numbers with reasonable precision
+    if (Number.isInteger(value)) return value.toLocaleString()
+    return value.toLocaleString(undefined, { maximumFractionDigits: 3 })
+  }
+  return String(value)
 }
