@@ -7,6 +7,7 @@ const navItems = [
   { path: '/catalog', label: 'Catálogo' },
   { path: '/wizard', label: 'Wizard' },
   { path: '/builder', label: 'Builder' },
+  { path: '/docs', label: 'Docs' },
 ]
 
 export function Header() {
