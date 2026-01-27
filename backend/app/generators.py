@@ -2,19 +2,18 @@ from typing import List, Dict, Any
 import numpy as np
 import pandas as pd
 from .models import SchemaConfig, ErrorType
-from .epidemic_generators import EpidemicGenerator, SurvivalGenerator
+from .base_generator import BaseGenerator
 
 
-class CIE10Generator:
-    """Generador CIE-10 determinístico"""
+class CIE10Generator(BaseGenerator):
+    """Generador CIE-10 deterministico"""
 
     def __init__(self, seed: int = 42):
-        np.random.seed(seed)
+        super().__init__(seed)
         self.valid_codes = self._load_codes()
 
     def _load_codes(self) -> List[str]:
-        """Carga códigos válidos CIE-10"""
-        # Versión simplificada - en prod cargar desde archivo/DB
+        """Carga codigos validos CIE-10"""
         return [
             "A00.0",
             "A01.0",
@@ -36,9 +35,11 @@ class CIE10Generator:
         ]
 
     def generate(self, n: int, error_types: dict = None) -> pd.DataFrame:
-        """Genera base sintética CIE-10"""
+        """Genera base sintetica CIE-10"""
+        self._validate_positive_int(n, "n")
+
         ids = np.arange(1, n + 1)
-        codes = np.random.choice(self.valid_codes, n)
+        codes = self.rng.choice(self.valid_codes, n)
 
         df = pd.DataFrame({"id": ids, "codigo": codes})
 
@@ -48,14 +49,14 @@ class CIE10Generator:
         return df
 
     def _apply_errors(self, df: pd.DataFrame, errors: dict = None) -> pd.DataFrame:
-        """Aplica errores según configuración"""
+        """Aplica errores segun configuracion"""
         if not errors:
             return df
         for error_type, prob in errors.items():
             if prob <= 0:
                 continue
 
-            mask = np.random.random(len(df)) < prob
+            mask = self.rng.random(len(df)) < prob
             if not mask.any():
                 continue
 
@@ -71,26 +72,28 @@ class CIE10Generator:
         return df
 
 
-class DemographicsGenerator:
-    """Generador demográfico poblacional"""
+class DemographicsGenerator(BaseGenerator):
+    """Generador demografico poblacional"""
 
     def __init__(self, seed: int = 42):
-        np.random.seed(seed)
+        super().__init__(seed)
 
     def generate(self, n: int, age_dist: str = "chile") -> pd.DataFrame:
-        """Genera datos demográficos"""
+        """Genera datos demograficos"""
+        self._validate_positive_int(n, "n")
+
         ids = np.arange(1, n + 1)
 
-        # Distribución edad (chilena promedio)
-        age = np.random.beta(2, 5, n) * 90 + 5
+        # Distribucion edad (chilena promedio)
+        age = self.rng.beta(2, 5, n) * 90 + 5
         age = age.astype(int)
 
-        # Género (50/50)
-        gender = np.random.choice(["M", "F"], n)
+        # Genero (50/50)
+        gender = self.rng.choice(["M", "F"], n)
 
-        # Región (15 regiones)
+        # Region (15 regiones)
         regions = [f"R{i:02d}" for i in range(1, 16)]
-        region = np.random.choice(regions, n)
+        region = self.rng.choice(regions, n)
 
         return pd.DataFrame(
             {"id": ids, "edad": age, "genero": gender, "region": region}

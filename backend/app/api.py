@@ -4,13 +4,9 @@ import yaml
 from pathlib import Path
 
 from .models import GenerationRequest, GenerationResponse, SchemaConfig
-from .generators import (
-    CIE10Generator,
-    DemographicsGenerator,
-    EpidemicGenerator,
-    SurvivalGenerator,
-    RegressionGenerator,
-)
+from .generators import CIE10Generator, DemographicsGenerator
+from .epidemic_generators import EpidemicGenerator, SurvivalGenerator
+from .regression_generator import RegressionGenerator
 
 router = APIRouter()
 SCHEMAS_DIR = Path("schemas")
@@ -52,9 +48,9 @@ async def generate_data(request: GenerationRequest):
 
     if request.schema_name == "cie10":
         df = generator.generate(n_rows, config.columns[0].error_types)
-    elif schema_name.startswith("epidemic") or schema_name == "timeseries_covid":
+    elif request.schema_name.startswith("epidemic") or request.schema_name == "timeseries_covid":
         model_type = (
-            schema_name.split("_")[1] if schema_name.startswith("epidemic") else "sir"
+            request.schema_name.split("_")[1] if request.schema_name.startswith("epidemic") else "sir"
         )
         params = config.get("parameters", {})
         if model_type == "sir":
@@ -73,7 +69,7 @@ async def generate_data(request: GenerationRequest):
                 gamma=params.get("gamma", 0.1),
                 latent_period=params.get("latent_period", 5),
             )
-    elif schema_name.startswith("survival") or schema_name == "case_control":
+    elif request.schema_name.startswith("survival") or request.schema_name == "case_control":
         params = config.get("parameters", {})
         df = generator.kaplan_meier(
             n_subjects=n_rows,

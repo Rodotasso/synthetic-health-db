@@ -1,0 +1,41 @@
+{
+  "title": "Synthetic Health Database Platform",
+  "description": "Platform for generating synthetic health databases for epidemiology, biostatistics, and public health surveillance. Dual-engine Python + R with support for CIE-10 codes, demographic data, epidemic models (SIR/SEIR), survival analysis, and surveillance systems.",
+  "upload_type": "software",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "Tasso Suazo, Rodolfo",
+      "affiliation": "Grupo de Ciencia de Datos para la Salud Publica, Escuela de Salud Publica, Universidad de Chile",
+      "orcid": "0000-0002-1264-4933"
+    }
+  ],
+  "keywords": [
+    "synthetic-data",
+    "epidemiology",
+    "biostatistics",
+    "public-health",
+    "CIE-10",
+    "Chile",
+    "health-data",
+    "surveillance",
+    "SIR-model",
+    "SEIR-model",
+    "survival-analysis"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/Rodotasso/synthetic-health-db",
+      "relation": "isSupplementTo",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ],
+  "communities": [
+    {
+      "identifier": "zenodo"
+    }
+  ],
+  "language": "eng",
+  "access_right": "open"
+}
