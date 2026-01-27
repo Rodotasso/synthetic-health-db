@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Header, Footer } from '@/components/layout'
-import { Home, Catalog, Wizard, Builder, Docs } from '@/pages'
+import { Home, Catalog, Wizard, Builder, Docs, Examples, Tutorials, Changelog } from '@/pages'
 
 function App() {
   return (
@@ -13,6 +13,9 @@ function App() {
           <Route path="/wizard" element={<Wizard />} />
           <Route path="/builder" element={<Builder />} />
           <Route path="/docs" element={<Docs />} />
+          <Route path="/examples" element={<Examples />} />
+          <Route path="/tutorials" element={<Tutorials />} />
+          <Route path="/changelog" element={<Changelog />} />
         </Routes>
         <Footer />
       </div>

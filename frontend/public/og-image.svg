@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e293b"/>
+    </linearGradient>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#1d4ed8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+
+  <!-- Grid pattern -->
+  <g opacity="0.1" stroke="#3b82f6" stroke-width="1">
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="200" x2="1200" y2="200"/>
+    <line x1="0" y1="300" x2="1200" y2="300"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="500" x2="1200" y2="500"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Logo -->
+  <g transform="translate(100, 215)">
+    <circle cx="100" cy="100" r="90" fill="url(#logoGrad)"/>
+    <rect x="82" y="40" width="36" height="120" rx="4" fill="white"/>
+    <rect x="40" y="82" width="120" height="36" rx="4" fill="white"/>
+    <circle cx="100" cy="100" r="12" fill="#1e40af"/>
+  </g>
+
+  <!-- Title -->
+  <text x="340" y="260" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="white">Synthetic Health DB</text>
+
+  <!-- Subtitle -->
+  <text x="340" y="330" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#94a3b8">Generador de Datos Sinteticos para Salud Publica</text>
+
+  <!-- Features -->
+  <g font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#64748b">
+    <text x="340" y="420">18 Generadores</text>
+    <text x="340" y="460">Epidemiologia + Bioestadistica + Datos Clinicos</text>
+    <text x="340" y="500">Python + R + TypeScript</text>
+  </g>
+
+  <!-- URL -->
+  <text x="100" y="590" font-family="monospace" font-size="20" fill="#3b82f6">rodotasso.github.io/synthetic-health-db</text>
+</svg>
